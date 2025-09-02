@@ -1,3 +1,60 @@
-h1 {
-  text-decoration: underline;
+/* Font GitHub */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    font-size: 16px;
+    color: #24292e;
+    background-color: #fff;
+    margin: 0;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 60px;
+    background: #fff;
+    border-bottom: 1px solid #e1e4e8;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 100;
+}
+
+header h1 a {
+    text-decoration: none;
+    color: #24292e;
+    font-weight: 600;
+}
+
+header nav a {
+    margin-left: 20px;
+    color: #24292e;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    border-top: 1px solid #e1e4e8;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #586069;
+    font-size: 14px;
+}
+
+main {
+    max-width: 980px;
+    margin: auto;
+    padding: 20px;
 }
