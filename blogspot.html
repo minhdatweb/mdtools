@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blogspot Feed on GitHub Pages</title>
+  <title>Chia sẻ âm nhạc Việt</title>
   <style>
-    body { font-family: Inter, sans-serif; font-size: 15px; line-height: 1.6; padding: 20px; }
-    ul { list-style: none; padding: 0; }
-    li { margin-bottom: 10px; }
-    a { text-decoration: none; color: #007acc; }
+    body { font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; margin: 0; padding: 20px; background: #f4f4f4; }
+    h1 { font-size: 24px; color: #333; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { background: #fff; margin-bottom: 10px; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    a { text-decoration: none; color: #007acc; font-weight: bold; }
     a:hover { text-decoration: underline; }
+    time { font-size: 0.875em; color: #888; }
   </style>
 </head>
 <body>
 
-<h1>Bài viết từ Blogspot</h1>
+<h1>Bài viết mới từ Chia sẻ âm nhạc Việt</h1>
 <div id="posts">Đang tải...</div>
 
 <script>
@@ -25,7 +27,7 @@
     .then(data => {
       const json = JSON.parse(data.contents);
       const posts = json.feed.entry;
-      if(!posts) {
+      if (!posts) {
         document.getElementById('posts').innerHTML = 'Chưa có bài viết.';
         return;
       }
@@ -33,9 +35,19 @@
       let html = '<ul>';
       posts.forEach(p => {
         const title = p.title.$t;
-        const linkObj = p.link.find(l => l.rel === 'alternate');
-        const link = linkObj ? linkObj.href : '#';
-        html += `<li><a href="${link}" target="_blank">${title}</a></li>`;
+        const link = p.link.find(l => l.rel === 'alternate').href;
+        const published = new Date(p.published.$t);
+        const date = published.toLocaleDateString('vi-VN', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        html += `
+          <li>
+            <a href="${link}" target="_blank">${title}</a>
+            <br>
+            <time datetime="${published.toISOString()}">${date}</time>
+          </li>
+        `;
       });
       html += '</ul>';
       document.getElementById('posts').innerHTML = html;
