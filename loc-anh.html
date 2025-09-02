@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home - My Site</title>
+    <link rel="stylesheet" href="bb/style.css" />
+  </head>
+  <body>
+    <div id="header"></div>
+
+    <main>
+      <h2>Image Link Sorter & Copier</h2>
+      <div style="max-width: 800px; margin: 20px auto; font-family: sans-serif">
+        <h3>Image Link Extractor</h3>
+
+        <textarea
+          id="htmlInput"
+          placeholder="Dán HTML hoặc các URL vào đây..."
+          style="width: 100%; height: 200px; padding: 8px; font-size: 14px"
+        ></textarea>
+
+        <div style="margin: 10px 0">
+          <button
+            onclick="extractImages()"
+            style="padding: 6px 12px; cursor: pointer"
+          >
+            Lọc ảnh
+          </button>
+          <button
+            onclick="sortImages()"
+            style="padding: 6px 12px; cursor: pointer"
+          >
+            Sắp xếp
+          </button>
+          <button
+            onclick="copyResult()"
+            style="padding: 6px 12px; cursor: pointer"
+          >
+            Copy
+          </button>
+          <span
+            id="copyMsg"
+            style="margin-left: 10px; color: green; display: none"
+            >Copied!</span
+          >
+        </div>
+
+        <textarea
+          id="output"
+          placeholder="Kết quả link ảnh sẽ hiện ở đây..."
+          style="width: 100%; height: 240px; padding: 8px; font-size: 14px"
+        ></textarea>
+        <div id="count" style="margin-top: 6px; color: #555">0 links</div>
+      </div>
+
+      <script>
+        function isImageUrl(u) {
+          return /\.(?:avif|webp|jpe?g|png|gif|svg)(?:\?.*)?$/i.test(u);
+        }
+        function cleanUrl(u) {
+          return (u || "").replace(/&amp;/g, "&").trim();
+        }
+
+        function extractImages() {
+          const input = document.getElementById("htmlInput").value || "";
+          const tmp = document.createElement("div");
+          tmp.innerHTML = input;
+
+          const set = new Set();
+
+          // Lấy từ thẻ <img>
+          tmp.querySelectorAll("img").forEach((img) => {
+            const src = cleanUrl(img.getAttribute("src"));
+            if (isImageUrl(src)) set.add(src);
+          });
+
+          // Lấy từ thẻ <a>
+          tmp.querySelectorAll("a").forEach((a) => {
+            const href = cleanUrl(a.getAttribute("href"));
+            if (isImageUrl(href)) set.add(href);
+          });
+
+          // Lấy URL trần trong văn bản
+          (input.match(/https?:\/\/[^\s"'<>]+/g) || []).forEach((u) => {
+            u = cleanUrl(u);
+            if (isImageUrl(u)) set.add(u);
+          });
+
+          const arr = Array.from(set);
+          document.getElementById("output").value = arr.join("\n");
+          document.getElementById("count").textContent = arr.length + " links";
+        }
+
+        function sortImages() {
+          const out = document.getElementById("output");
+          let links = out.value
+            .split(/\r?\n/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+          function lastNumber(u) {
+            const name = u.split("/").pop().split("?")[0];
+            const m = name.match(/(\d+)(?!.*\d)/); // số cuối cùng trong tên file
+            return m ? parseInt(m[1], 10) : Number.MAX_SAFE_INTEGER;
+          }
+
+          links.sort((a, b) => {
+            const na = lastNumber(a),
+              nb = lastNumber(b);
+            if (na !== nb) return na - nb;
+            return a.localeCompare(b);
+          });
+
+          out.value = links.join("\n");
+        }
+
+        async function copyResult() {
+          const text = document.getElementById("output").value;
+          if (!text) return;
+          try {
+            await navigator.clipboard.writeText(text);
+            const msg = document.getElementById("copyMsg");
+            msg.style.display = "inline";
+            setTimeout(() => {
+              msg.style.display = "none";
+            }, 1500);
+          } catch (e) {
+            console.error("Copy failed", e);
+          }
+        }
+      </script>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="bb/main.js"></script>
+  </body>
+</html>
