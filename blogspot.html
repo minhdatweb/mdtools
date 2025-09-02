@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blogspot Feed on GitHub Pages</title>
+  <style>
+    body { font-family: Inter, sans-serif; font-size: 15px; line-height: 1.6; padding: 20px; }
+    ul { list-style: none; padding: 0; }
+    li { margin-bottom: 10px; }
+    a { text-decoration: none; color: #007acc; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<h1>Bài viết từ Blogspot</h1>
+<div id="posts">Đang tải...</div>
+
+<script>
+  const blogURL = 'https://yourblog.blogspot.com/feeds/posts/default?alt=json';
+
+  fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(blogURL)}`)
+    .then(res => res.json())
+    .then(data => {
+      const json = JSON.parse(data.contents);
+      const posts = json.feed.entry;
+      if(!posts) {
+        document.getElementById('posts').innerHTML = 'Chưa có bài viết.';
+        return;
+      }
+
+      let html = '<ul>';
+      posts.forEach(p => {
+        const title = p.title.$t;
+        const linkObj = p.link.find(l => l.rel === 'alternate');
+        const link = linkObj ? linkObj.href : '#';
+        html += `<li><a href="${link}" target="_blank">${title}</a></li>`;
+      });
+      html += '</ul>';
+      document.getElementById('posts').innerHTML = html;
+    })
+    .catch(err => {
+      document.getElementById('posts').innerHTML = 'Không tải được dữ liệu.';
+      console.error(err);
+    });
+</script>
+
+</body>
+</html>
